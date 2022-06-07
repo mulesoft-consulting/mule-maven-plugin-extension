@@ -156,6 +156,7 @@ public class CloudHubArtifactDeployer implements ArtifactDeployer {
     Application currentApplication = client.getApplications(deployment.getApplicationName());
     if (currentApplication != null) {
       log.info("Application: " + deployment.getApplicationName() + " already exists, redeploying");
+      deployment.setArtifact(null);
       client.updateApplication(getApplication(currentApplication), deployment.getArtifact());
     } else {
       log.error("Application name: " + deployment.getApplicationName() + " is not available. Aborting.");
