@@ -1,0 +1,73 @@
+= Mule Artifact Tools
+
+The project contains all the modules required to create Mule artifacts and to deploy them to the different environments of the Anypoint Platform.
+
+== Modules
+* mule-classloader-model
+* mule-packager
+* mule-deployer
+* mule-maven-plugin
+* mule-artifact-it
+
+
+=== mule-classloader-model
+Contains the abstract model which describes the descriptor files used when generating a repository for heavy weight packages
+
+=== mule-packager
+Contains the Java API that allows you to create the different Mule artifacts:
+
+* mule-application
+* mule-policy
+* mule-domain
+* mule-domain-bundle
+
+It also contains a set of validators to ensure that the artifact can be generated properly
+
+=== mule-deployer
+Contains the Java API that allows you to deploy the Mule artifacts to the different environments
+
+=== mule-maven-plugin
+Is the Maven Plugin that provides Maven integration.
+Through it you can package different Mule artifacts and deploy them to both Nexus Servers and the different Anypoint Environments.
+
+
+=== mule-artifact-it
+Contains the integration tests for the modules:
+
+* mule-packager
+* mule-deployer
+* mule-maven-plugin
+
+== Debugging
+
+In case you run into problems while using the plugin and wants to try find the cause by yourself, you can easily debug the plugin using mvnDebug. These are the steps:
+
+* Clone this project;
+* In the project base folder, checkout to the tag that __corresponds to the version of the mule project that you are building/deploying__;
+* Then, run 
+```
+mvn clean install
+```
+* In your IDE, create a new remote debug configuration and set the port to 8000;
+* Run the command that failed and that you want to debug, but replace **mvn** by **mvnDebug** (check the tips session below);
+* Place a breakpoint in one of the mojos of the mule-maven-plugin module (that should be a good starting point);
+* Start debugging.
+
+=== Tips:
+
+To find the right tag, run
+```
+git tag -l
+```
+- And then run
+```
+git checkout <tag_name>
+```
+Also, if the build failed when invoking (as an example)
+```
+mvn clean deploy -DmuleDeploy
+```
+You should debug by running
+```
+mvnDebug clean deploy -DmuleDeploy
+```
