@@ -1,0 +1,240 @@
+= mule-maven-plugin
+
+Maven plugin to deploy Mule applications to different kind of servers: Standalone (both Community and Enterprise), Clustered, Anypoint Runtime Manager and CloudHub. The main uses are to run integration tests and deploy applications to different environments.
+
+* Supports both Community and Enterprise editions.
+* Deploy Mule applications to Mule Standalone Runtime.
+* Deploy Mule applications to Anypoint Runtime Manager.
+* Deploy Mule applications to Anypoint CloudHub.
+
+== Maven dependency
+
+[source,xml]
+----
+<plugin>
+  <groupId>org.mule.tools.maven</groupId>
+  <artifactId>mule-maven-plugin</artifactId>
+  <version>3.0.0</version>
+</plugin>
+----
+
+== Maven repository
+
+Add https://repository.mulesoft.org/nexus/content/repositories/releases[this] repository to your project or your settings.xml like this:
+
+[source,xml]
+----
+<pluginRepositories>
+    <pluginRepository>
+        <id>mule-public</id>
+        <url>https://repository.mulesoft.org/nexus/content/repositories/releases</url>
+    </pluginRepository>
+</pluginRepositories>
+----
+
+You can download the JAR file manually from https://repository.mulesoft.org/nexus/content/repositories/releases/org/mule/tools/maven/mule-maven-plugin/2.0[here] or get if from Maven Central Repository.
+
+== Usage
+The mule-maven-plugin can be used not only to package artifact but also to deploy them.
+
+To package an artifact just run:
+
+`mvn clean package`
+
+To deploy and artifact just run:
+
+`mvn clean deploy`
+
+=== Deployment
+Since version 3.0.0 of the mule-maven-plugin almost all artifacts generated are *JAR* files.
+As a result the Maven *deploy* phase will (by default) try to deploy the generated artifact to a Nexus repository.
+
+If you wish to deploy you artifact to one of the Anypoint Environments you'll have to add the property *muleDeploy*
+
+`mvn clean deploy -DmuleDeploy`
+
+This will prevent the Nexus deployment and try to deploy the artifact to the Mule environment of your choosing.
+
+
+== A simple example
+
+In the most simple scenario the plugin will deploy the artifact to a Mule Standalone Runtime Server:
+
+[source,xml]
+----
+<plugin>
+    <groupId>org.mule.tools.maven</groupId>
+    <artifactId>mule-maven-plugin</artifactId>
+    <version>3.0.0</version>
+    <extensions>true</extensions>
+    <configuration>
+        <standaloneDeployment>
+            <muleVersion>4.0.0</muleVersion>
+            <muleHome>${mule.home.test}</muleHome>
+            <timeout>120000</timeout>
+            <deploymentTimeout>120000</deploymentTimeout>
+        </standaloneDeployment>
+    </configuration>
+</plugin>
+----
+
+=== Notes
+
+* You need to have a Mule Standalone Runtime Server installed locally and point to it with the *muleHome* property.
+
+
+== Deploy to Anypoint Runtime Manager
+
+You can deploy your application to a running ARM server, server group or cluster.
+
+[source,xml]
+----
+<plugin>
+    <groupId>org.mule.tools.maven</groupId>
+    <artifactId>mule-maven-plugin</artifactId>
+    <version>3.0.0</version>
+    <extensions>true</extensions>
+    <configuration>
+        <armDeployment>
+            <username>${anypoint.username}</username>
+            <password>${anypoint.password}</password>
+            <targetType>server</targetType>
+            <environment>Production</environment>
+            <target>${name.of.your.managed.instance}</target>
+        </armDeployment>
+    </configuration>
+</plugin>
+----
+=== ARM On Prem TLS errors
+
+When trying to connect to an On Prem installation the plugin will validate certificates for that server. If you haven't installed the server certificates in your trust store you will see an SSL error. To avoid that problem you can run the plugin in an insecure mode, this way, the security validations will be skipped. You can use the **armInsecure** tag or the **arm.insecure** system property. See the configuration example below:
+
+[source,xml]
+----
+<plugin>
+    <groupId>org.mule.tools.maven</groupId>
+    <artifactId>mule-maven-plugin</artifactId>
+    <version>3.0.0</version>
+    <extensions>true</extensions>
+    <configuration>
+        <armDeployment>
+            <username>${anypoint.username}</username>
+            <password>${anypoint.password}</password>
+            <targetType>server</targetType>
+            <environment>Production</environment>
+            <target>${name.of.your.managed.instance}</target>
+            <armInsecure>true</armInsecure>
+         </armDeployment>
+    </configuration>
+</plugin>
+----
+
+[WARNING]
+Enabling an insecure connection is a very risky practice, you shouldn't use this except when you know what you are doing and your On Prem installation is isolated in a local network.
+
+
+== Deploy to Anypoint CloudHub
+
+To deploy your application to CloudHub:
+
+[source,xml]
+----
+<plugin>
+    <groupId>org.mule.tools.maven</groupId>
+    <artifactId>mule-maven-plugin</artifactId>
+    <version>3.0.0</version>
+    <extensions>true</extensions>
+    <configuration>
+        <cloudHubDeployment>
+            <username>${anypoint.username}</username>
+            <password>${anypoint.password}</password>
+            <environment>Production</environment>
+            <applicationName>${cloudhub.application.name}</applicationName>
+            <muleVersion>${mule.version}</muleVersion> <!-- This is the runtime version as it appears on the CloudHub interface -->
+            <properties>
+                <key>value</key>
+            </properties>
+        </cloudHubDeployment>
+    </configuration>
+</plugin>
+----
+
+== Connected Apps Support
+
+To use Connected Apps instead of Anypoint platform account (username/password) for deployments, simply swap username and password elements with connected app details:
+
+<connectedAppClientId>${connectedApp.clientId}</connectedAppClientId>
+<connectedAppClientSecret>${connectedApp.clientSecret}</connectedAppClientSecret>
+<connectedAppGrantType>client_credentials</connectedAppGrantType>
+
+[source,xml]
+----
+<plugin>
+    <groupId>org.mule.tools.maven</groupId>
+    <artifactId>mule-maven-plugin</artifactId>
+    <version>3.0.0</version>
+    <extensions>true</extensions>
+    <configuration>
+        <cloudHubDeployment>
+            <connectedAppClientId>${connectedApp.clientId}</connectedAppClientId>
+            <connectedAppClientSecret>${connectedApp.clientSecret}</connectedAppClientSecret>
+            <connectedAppGrantType>client_credentials</connectedAppGrantType>
+            <environment>Production</environment>
+            <applicationName>${cloudhub.application.name}</applicationName>
+            <muleVersion>${mule.version}</muleVersion> <!-- This is the runtime version as it appears on the CloudHub interface -->
+            <properties>
+                <key>value</key>
+            </properties>
+        </cloudHubDeployment>
+    </configuration>
+</plugin>
+----
+
+=== Business group selection
+
+In both CloudHub and Anypoint Runtime Manager deployment you can select a Business Group other than your root Organization. In the example below the plugin is configured to deploy to a business group called **devops** which is under the **engineering** business group. If your business group name includes a backslash, you can escape it with backslash.
+
+[source,xml]
+----
+<plugin>
+    <groupId>org.mule.tools.maven</groupId>
+    <artifactId>mule-maven-plugin</artifactId>
+    <version>3.0.0</version>
+    <extensions>true</extensions>
+    <configuration>
+        <cloudHubDeployment>
+            <username>${anypoint.username}</username>
+            <password>${anypoint.password}</password>
+            <businessGroup>engineering\devops</businessGroup>
+            <environment>Production</environment>
+            <applicationName>${cloudhub.application.name}</applicationName>
+            <muleVersion>${mule.version}</muleVersion> <!-- This is the runtime version as it appears on the CloudHub interface -->
+            <properties>
+                <key>value</key>
+            </properties>
+        </cloudHubDeployment>
+    </configuration>
+</plugin>
+----
+
+
+== Deploy to Mule Runtime Server using the Mule Agent
+
+You can make the plugin deploy to an existing Mule server, using the API provided by the Mule Agent:
+
+[source,xml]
+----
+<plugin>
+    <groupId>org.mule.tools.maven</groupId>
+    <artifactId>mule-maven-plugin</artifactId>
+    <version>3.0.0</version>
+    <extensions>true</extensions>
+    <configuration>
+        <agentDeployment>
+            <uri>http://localhost:9999/</uri>
+        </agentDeployment>
+    </configuration>
+</plugin>
+----
+
+The _uri_ parameter is the endpoint of the REST API of the Agent.

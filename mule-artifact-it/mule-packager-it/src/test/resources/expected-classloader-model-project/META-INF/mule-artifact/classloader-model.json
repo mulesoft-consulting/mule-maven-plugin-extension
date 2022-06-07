@@ -1,0 +1,43 @@
+{
+  "version": "1.1.0",
+  "artifactCoordinates": {
+    "groupId": "org.apache.maven.plugin.my.unit",
+    "artifactId": "empty-classloader-model-project",
+    "version": "1.0-SNAPSHOT",
+    "type": "pom"
+  },
+  "dependencies": [
+    {
+      "artifactCoordinates": {
+        "groupId": "group.id.a",
+        "artifactId": "artifact-id-a",
+        "version": "1.0.0-SNAPSHOT",
+        "type": "jar"
+      },
+      "uri": "repository/group/id/a/artifact-id-a/1.0.0-SNAPSHOT/artifact-id-a-1.0.0-SNAPSHOT.jar",
+      "packages": [
+        "com.mycompany.artifact.id.api",
+        "com.mycompany.artifact.id.internal"
+      ],
+      "resources": [
+        "com/mycompany/artifact.id/resourceA"
+      ]
+    },
+    {
+      "artifactCoordinates": {
+        "groupId": "group.id.b",
+        "artifactId": "artifact-id-b",
+        "version": "1.0.0",
+        "type": "jar"
+      },
+      "uri": "repository/group/id/b/artifact-id-b/1.0.0/artifact-id-b-1.0.0.jar"
+    }
+  ],
+  "packages": [
+    "com.app.api",
+    "com.app.internal"
+  ],
+  "resources": [
+    "com/app/resourceB"
+  ]
+}

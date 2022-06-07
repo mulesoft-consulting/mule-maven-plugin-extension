@@ -1,0 +1,19 @@
+@Library('lifecycle-utils@master') _
+//Library code can be found at https://github.com/mulesoft/lifecycle-pipeline-utils
+
+properties([
+    parameters([
+        string(name: 'JDK', defaultValue: "JDK8", description: 'JDK Version to be used'),
+        string(name: 'maven', defaultValue: "Maven (latest)", description: 'Maven version to be used')
+    ]),
+])
+
+def pipelineParams = [
+  "agent": "ubuntu-14.04",
+  "jdk": params.JDK,
+  "maven": params.maven,
+  "projectKey": "mule-maven-plugin",
+  "protectedBranches" : ["support/3.x", "support/3.4.x", "support/3.3.x", "support/2.x"]
+]
+
+build(pipelineParams)
