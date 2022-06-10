@@ -9,13 +9,19 @@
  */
 package org.mule.tools.client.cloudhub.model;
 
+import org.apache.maven.plugins.annotations.Parameter;
+
 /**
  * @author Mulesoft Inc.
  * @since 2.3.0
+ * added @parameter since 3.7
  */
 public class LogLevelInfo {
 
+  @Parameter
   private String packageName;
+
+  @Parameter
   private LogLevel level;
 
   public String getPackageName() {

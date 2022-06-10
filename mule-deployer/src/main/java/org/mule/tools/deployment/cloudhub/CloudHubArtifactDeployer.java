@@ -11,12 +11,7 @@ package org.mule.tools.deployment.cloudhub;
 
 import org.mule.tools.client.arm.model.User;
 import org.mule.tools.client.cloudhub.CloudHubClient;
-import org.mule.tools.client.cloudhub.model.Application;
-import org.mule.tools.client.cloudhub.model.Environment;
-import org.mule.tools.client.cloudhub.model.MuleVersion;
-import org.mule.tools.client.cloudhub.model.SupportedVersion;
-import org.mule.tools.client.cloudhub.model.WorkerType;
-import org.mule.tools.client.cloudhub.model.Workers;
+import org.mule.tools.client.cloudhub.model.*;
 import org.mule.tools.client.core.exception.DeploymentException;
 import org.mule.tools.deployment.artifact.ArtifactDeployer;
 import org.mule.tools.model.Deployment;
@@ -25,7 +20,7 @@ import org.mule.tools.utils.DeployerLog;
 import org.mule.tools.verification.DeploymentVerification;
 import org.mule.tools.verification.cloudhub.CloudHubDeploymentVerification;
 
-import java.util.Map;
+import java.util.*;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static org.apache.commons.lang3.StringUtils.isBlank;
@@ -39,6 +34,7 @@ public class CloudHubArtifactDeployer implements ArtifactDeployer {
   private static final String DEFAULT_CH_WORKER_TYPE = "Micro";
   private static final Integer DEFAULT_CH_WORKERS = 1;
   private static final Long DEFAULT_CLOUDHUB_DEPLOYMENT_TIMEOUT = 600000L;
+  private static final List<LogLevelInfo> DEFAULT_LOG_LEVEL = new ArrayList<>();
   public static final String OBJECT_STOREV1 = "objectStoreV1";
 
   private final DeployerLog log;
@@ -232,6 +228,9 @@ public class CloudHubArtifactDeployer implements ArtifactDeployer {
 
     application.setObjectStoreV1(!deployment.getObjectStoreV2());
     application.setPersistentQueues(deployment.getPersistentQueues());
+
+    application.setLogLevels((deployment.getLogLevels() == null) ? DEFAULT_LOG_LEVEL
+        : Arrays.asList(deployment.getLogLevels()));
 
     return application;
   }
