@@ -60,7 +60,5 @@ public class ExtensionModelLoaderTest extends MavenClientTest {
     assertEquals("Loaded a different amount of runtime extension models than expected", 11,
                  extensionModelLoader.getRuntimeExtensionModels().size());
     assertEquals("Loaded a different amount of plugin extension models than expected", 2, http.getExtensionModels().size());
-
   }
-
 }

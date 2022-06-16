@@ -17,19 +17,13 @@ import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.net.URISyntaxException;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.mule.tools.client.cloudhub.model.Application;
-import org.mule.tools.client.cloudhub.model.Deployment;
-import org.mule.tools.client.cloudhub.model.DeploymentLogRequest;
-import org.mule.tools.client.cloudhub.model.Instance;
-import org.mule.tools.client.cloudhub.model.MuleVersion;
+import org.mule.tools.client.cloudhub.model.*;
 import org.mule.tools.client.core.exception.ClientException;
 import org.mule.tools.model.anypoint.CloudHubDeployment;
 
@@ -39,11 +33,10 @@ public class CloudHubClientTestCase {
   private static final String BASE_URI = "https://anypoint.mulesoft.com";
   private static final String USERNAME = System.getProperty("username");
   private static final String PASSWORD = System.getProperty("password");
-
   private static final String REGION = "us-east-1";
   private static final String MULE_VERSION = "4.2.0";
   private static final String ENVIRONMENT = "Production";
-
+  private static List<LogLevelInfo> LOG_LEVEL = new ArrayList<>();
   private static final String BASE_DOMAIN_NAME = "test-app-%s";
   public static final String APPLICATION_FILE_NAME = "rick1-1.0.0-SNAPSHOT-mule-application-light-package.jar";
 
@@ -66,6 +59,7 @@ public class CloudHubClientTestCase {
     buildCloudhubDeployment();
 
     cloudHubClient = new CloudHubClient(cloudHubDeployment, null);
+
   }
 
   private void buildCloudhubDeployment() {
@@ -86,6 +80,7 @@ public class CloudHubClientTestCase {
     baseApplication.setMuleVersion(muleVersion);
     baseApplication.setProperties(properties);
     baseApplication.setRegion(REGION);
+    baseApplication.setLogLevels(LOG_LEVEL);
   }
 
   @After

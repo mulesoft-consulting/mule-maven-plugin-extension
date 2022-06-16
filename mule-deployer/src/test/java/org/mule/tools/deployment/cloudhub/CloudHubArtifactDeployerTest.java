@@ -17,11 +17,8 @@ import org.junit.rules.TemporaryFolder;
 import org.mockito.ArgumentCaptor;
 import org.mule.tools.client.arm.model.User;
 import org.mule.tools.client.arm.model.UserInfo;
-import org.mule.tools.client.cloudhub.model.Application;
+import org.mule.tools.client.cloudhub.model.*;
 import org.mule.tools.client.cloudhub.CloudHubClient;
-import org.mule.tools.client.cloudhub.model.Environment;
-import org.mule.tools.client.cloudhub.model.LatestUpdate;
-import org.mule.tools.client.cloudhub.model.SupportedVersion;
 import org.mule.tools.client.core.exception.DeploymentException;
 import org.mule.tools.model.anypoint.CloudHubDeployment;
 import org.mule.tools.utils.DeployerLog;
@@ -84,6 +81,10 @@ public class CloudHubArtifactDeployerTest {
     when(deploymentMock.getWorkers()).thenReturn(1);
     when(deploymentMock.getWorkerType()).thenReturn("Micro");
 
+    LogLevelInfo logLevelInfo = new LogLevelInfo();
+    logLevelInfo.setPackageName("com.example.test");
+    logLevelInfo.setLevel(LogLevel.INFO);
+    when(deploymentMock.getLogLevels()).thenReturn(new LogLevelInfo[] {logLevelInfo});
 
     when(clientMock.getApplications(FAKE_APPLICATION_NAME)).thenReturn(applicationMock);
     when(clientMock.getMe()).thenReturn(userInfo);
@@ -386,5 +387,36 @@ public class CloudHubArtifactDeployerTest {
     version.setVersion(muleVersion);
     supportedVersions.add(version);
     return supportedVersions;
+  }
+
+  @Test
+  public void testLogLevelsArePresent() throws DeploymentException {
+    CloudHubDeployment deployment = new CloudHubDeployment();
+
+    deployment.setSkipDeploymentVerification(true);
+    deployment.setApplicationName(FAKE_APPLICATION_NAME);
+    deployment.setMuleVersion("4.0.0");
+    deployment.setArtifact(applicationFile);
+    deployment.setWorkers(1);
+    deployment.setWorkerType("Micro");
+
+    LogLevelInfo logLevelInfo = new LogLevelInfo();
+    logLevelInfo.setPackageName("com.example.test");
+    logLevelInfo.setLevel(LogLevel.INFO);
+    deployment.setLogLevels(new LogLevelInfo[] {logLevelInfo});
+
+    cloudHubArtifactDeployer = new CloudHubArtifactDeployer(deployment, clientMock, logMock);
+
+    when(clientMock.isDomainAvailable(any())).thenReturn(true);
+
+    Environment mockEnvironment = mock(Environment.class);
+
+    when(clientMock.getEnvironment()).thenReturn(mockEnvironment);
+
+    cloudHubArtifactDeployer.deployApplication();
+
+    ArgumentCaptor<Application> applicationCaptor = ArgumentCaptor.forClass(Application.class);
+    verify(clientMock).createApplication(applicationCaptor.capture(), any());
+    assertThat("LogLevels should be present", applicationCaptor.getValue().getLogLevels().get(0), equalTo(logLevelInfo));
   }
 }
