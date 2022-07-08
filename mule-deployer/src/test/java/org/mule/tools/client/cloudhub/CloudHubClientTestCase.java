@@ -59,7 +59,6 @@ public class CloudHubClientTestCase {
     buildCloudhubDeployment();
 
     cloudHubClient = new CloudHubClient(cloudHubDeployment, null);
-
   }
 
   private void buildCloudhubDeployment() {
@@ -174,5 +173,4 @@ public class CloudHubClientTestCase {
   private void verifyAppExists(String appName) {
     assertThat(cloudHubClient.getApplications(appName), notNullValue());
   }
-
 }
